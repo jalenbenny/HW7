@@ -50,12 +50,12 @@ public class ProblemSolutions {
                 }
             }
 
-            // Swap the found min/max element with the first element
+            // swap the found min/max element with the first element
             int temp = values[idx];
             values[idx] = values[i];
             values[i] = temp;
         }
-    } // End method selectionSort
+    } // eynd method selectionSort
 
     /**
      * Method mergeSortDivisibleByKFirst
@@ -86,70 +86,65 @@ public class ProblemSolutions {
     }
 
     private void mergeDivisbleByKFirst(int arr[], int k, int left, int mid, int right) {
+        // create a temporary array to hold the merged result
         int[] temp = new int[right - left + 1];
-        int index = 0;
 
-        int i = left;
-        int j = mid + 1;
+        // create separate lists for divisible and non-divisible elements
+        int[] leftDivisible = new int[mid - left + 1];
+        int[] leftNonDivisible = new int[mid - left + 1];
+        int[] rightDivisible = new int[right - mid];
+        int[] rightNonDivisible = new int[right - mid];
 
-        // First: collect all divisible by k, descending
-        while (i <= mid && j <= right) {
-            boolean iDiv = arr[i] % k == 0;
-            boolean jDiv = arr[j] % k == 0;
+        int leftDivCount = 0, leftNonDivCount = 0;
+        int rightDivCount = 0, rightNonDivCount = 0;
 
-            if (iDiv && jDiv) {
-                if (arr[i] >= arr[j]) {
-                    temp[index++] = arr[i++];
-                } else {
-                    temp[index++] = arr[j++];
-                }
-            } else if (iDiv) {
-                temp[index++] = arr[i++];
-            } else if (jDiv) {
-                temp[index++] = arr[j++];
+        // separate elements into divisible and non-divisible arrays
+        for (int i = left; i <= mid; i++) {
+            if (arr[i] % k == 0) {
+                leftDivisible[leftDivCount++] = arr[i];
             } else {
-                break;
+                leftNonDivisible[leftNonDivCount++] = arr[i];
             }
         }
 
-        while (i <= mid && arr[i] % k == 0) {
-            temp[index++] = arr[i++];
-        }
-
-        while (j <= right && arr[j] % k == 0) {
-            temp[index++] = arr[j++];
-        }
-
-        // Now: collect all non-divisible, ascending
-        i = left;
-        j = mid + 1;
-        while (i <= mid && j <= right) {
-            boolean iDiv = arr[i] % k != 0;
-            boolean jDiv = arr[j] % k != 0;
-
-            if (iDiv && jDiv) {
-                if (arr[i] <= arr[j]) {
-                    temp[index++] = arr[i++];
-                } else {
-                    temp[index++] = arr[j++];
-                }
-            } else if (iDiv) {
-                temp[index++] = arr[i++];
-            } else if (jDiv) {
-                temp[index++] = arr[j++];
+        for (int i = mid + 1; i <= right; i++) {
+            if (arr[i] % k == 0) {
+                rightDivisible[rightDivCount++] = arr[i];
             } else {
-                break;
+                rightNonDivisible[rightNonDivCount++] = arr[i];
             }
         }
 
-        while (i <= mid && arr[i] % k != 0) {
-            temp[index++] = arr[i++];
+        // merge the two divisible arrays
+        int i = 0, j = 0, index = 0;
+        while (i < leftDivCount && j < rightDivCount) {
+            temp[index++] = leftDivisible[i++];  // Maintain original order for divisible elements
+        }
+        while (i < leftDivCount) {
+            temp[index++] = leftDivisible[i++];
+        }
+        while (j < rightDivCount) {
+            temp[index++] = rightDivisible[j++];
         }
 
-        while (j <= right && arr[j] % k != 0) {
-            temp[index++] = arr[j++];
+        // merge the two non-divisible arrays in ascending order
+        i = 0;
+        j = 0;
+        while (i < leftNonDivCount && j < rightNonDivCount) {
+            if (leftNonDivisible[i] <= rightNonDivisible[j]) {
+                temp[index++] = leftNonDivisible[i++];
+            } else {
+                temp[index++] = rightNonDivisible[j++];
+            }
+        }
+        while (i < leftNonDivCount) {
+            temp[index++] = leftNonDivisible[i++];
+        }
+        while (j < rightNonDivCount) {
+            temp[index++] = rightNonDivisible[j++];
         }
 
+        // copy back to original array
         for (int t = 0; t < temp.length; t++) {
             arr[left + t] = temp[t];
         }
